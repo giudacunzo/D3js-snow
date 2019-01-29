@@ -1,13 +1,14 @@
 var width = 500, height = 500;
 var threshold = 0;
 var count = 0;
-var yVelocity = 2;
+var yVelocity = 1.8;
 var nodes = []
+var img = [1]
 
 var interval = setInterval(function () {
     let x = getRandomArbitrary(10, width)
     nodes.push({
-        r: getRandomArbitrary(5, 20),
+        r: getRandomArbitrary(10, 35),
         x: x,
         y: 0,
         cx: x,
@@ -16,33 +17,38 @@ var interval = setInterval(function () {
     update();
     if (nodes.length == 300)
         clearInterval(interval);
-}, 100)
+}, 200)
 
 var svg = d3.select("svg")
     .attr("width", width)
     .attr("height", height);
 
 
+var snowflakes = svg.append('g').raise()
 function update() {
-    let circle = svg.selectAll("circle")
+    let circle = snowflakes.selectAll("image")
         .data(nodes)
 
     circle.enter()
-        .append("circle").merge(circle)
-        .attr("r", function (d) {
+        .append("image").merge(circle)
+        .attr("xlink:href", "snowflake.svg")
+        .attr("height", function (d) {
             return d.r;
-        })
+        }) .attr("color", "white").attr("width", function (d) {
+        return d.r;
+    })
         .attr("x", function (d) {
             return d.x;
         })
         .attr("y", function (d) {
             return d.y;
-        }).attr("cx", function (d) {
-        return d.cx;
-    })
-        .attr("cy", function (d) {
-            return d.cy;
-        });
+        })
+    //     .attr("cx", function (d) {
+    //     return d.cx;
+    // })
+    //     .attr("cy", function (d) {
+    //         return d.cy;
+    //     });
 
     circle
         .exit()
@@ -57,7 +63,7 @@ function createSimulation() {
     return d3.forceSimulation(nodes)
         .alphaTarget(1)
         .force('collision', d3.forceCollide().radius((d) => {
-            return d.r
+            return d.r / 2.5
         }).strength(0.4).iterations(5))
         .on('tick', tickedY);
 }
@@ -113,15 +119,15 @@ function restart() {
 
 function tickedY() {
 
-    var u = d3.select('svg')
-        .selectAll('circle')
+    var u = snowflakes
+        .selectAll('image')
         .data(nodes)
 
     u.enter()
-        .append('circle')
+        .append('image')
         .merge(u)
 
-    u.attr('cx', function (d) {
+    u.attr('x', function (d) {
 
             // // d.vx = Math.random()
             // // d.vx = 10;
@@ -129,20 +135,26 @@ function tickedY() {
                 d.vx = 0;
             } else {
                 if (!d.ticks) {
-                    d.ticks = 100
+                    d.ticks = 200
                 } else {
+
+                    if (d.ticks > 150) {
+                        d.vx = 0.8
+                    } else if (d.ticks > 100) {
+                        d.vx = 0.4
+                    } else if (d.ticks > 50) {
+                        d.vx = -0.4
+                    } else  {
+                        d.vx = -0.8
+                    }
+
                     d.ticks--
-                }
-                if (d.ticks > 50) {
-                    d.vx = 0.9
-                } else {
-                    d.vx = -0.9
                 }
             }
             return Math.max(d.r, Math.min(width - d.r, d.x));
         }
     )
-        .attr('cy', function (d) {
+        .attr('y', function (d) {
             d.vy = yVelocity
 
             if (d.y > height * .2) { //per evitare che collisioni iniziali fermino la caduta dei fiocchi

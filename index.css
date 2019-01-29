@@ -1,0 +1,9 @@
+.bg{
+    background: -moz-linear-gradient(91deg, rgba(41,110,174,1) 7%, rgba(27,76,132,1) 37%, rgba(10,34,78,1) 76%, rgba(2,5,28,1) 99%, rgba(2,5,28,1) 100%); /* ff3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(2,5,28,1)), color-stop(1%, rgba(2,5,28,1)), color-stop(24%, rgba(10,34,78,1)), color-stop(63%, rgba(27,76,132,1)), color-stop(93%, rgba(41,110,174,1))); /* safari4+,chrome */
+    background: -webkit-linear-gradient(91deg, rgba(41,110,174,1) 7%, rgba(27,76,132,1) 37%, rgba(10,34,78,1) 76%, rgba(2,5,28,1) 99%, rgba(2,5,28,1) 100%); /* safari5.1+,chrome10+ */
+    background: -o-linear-gradient(91deg, rgba(41,110,174,1) 7%, rgba(27,76,132,1) 37%, rgba(10,34,78,1) 76%, rgba(2,5,28,1) 99%, rgba(2,5,28,1) 100%); /* opera 11.10+ */
+    background: -ms-linear-gradient(91deg, rgba(41,110,174,1) 7%, rgba(27,76,132,1) 37%, rgba(10,34,78,1) 76%, rgba(2,5,28,1) 99%, rgba(2,5,28,1) 100%); /* ie10+ */
+    background: linear-gradient(359deg, rgba(41,110,174,1) 7%, rgba(27,76,132,1) 37%, rgba(10,34,78,1) 76%, rgba(2,5,28,1) 99%, rgba(2,5,28,1) 100%); /* w3c */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#02051C', endColorstr='#296EAE',GradientType=0 ); /* ie6-9 */
+}
