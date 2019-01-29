@@ -145,7 +145,7 @@ function tickedY() {
         .attr('cy', function (d) {
             d.vy = yVelocity
 
-            if (d.y > height * .8) { //per evitare che collisioni iniziali fermino la caduta dei fiocchi
+            if (d.y > height * .2) { //per evitare che collisioni iniziali fermino la caduta dei fiocchi
                 if (
                     d.y >= height - (d.r)//*threshold)
                 ) {
