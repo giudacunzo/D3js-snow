@@ -3,19 +3,21 @@ var width = 500, height = 500;
 var yVelocity = 1.8;
 var nodes = []
 
-var interval = setInterval(function () {
-    let x = getRandomArbitrary(10, width)
-    nodes.push({
-        r: getRandomArbitrary(10, 35),
-        x: x,
-        y: 0
-    })
-    update();
+var interval =
+    setInterval(function () {
+        let x = getRandomArbitrary(10, width)
+        nodes.push({
+            r: getRandomArbitrary(10, 35),
+            x: x,
+            y: 0,
+            opacity: getRandomArbitrary(0.65, 1)
+        })
+        update();
 
-    if (nodes.length == 500)
-        clearInterval(interval);
+        if (nodes.length == 250)
+            clearInterval(interval);
 
-}, 250)
+    }, 250)
 
 var svg = d3.select("svg")
     .attr("width", width)
@@ -29,12 +31,13 @@ function createSimulation() {
 
     return d3.forceSimulation(nodes)
         .alphaTarget(1)
-        .force('collision', d3.forceCollide().radius((d) => {
-            return d.r / 2.5
-        }).strength(0.4).iterations(5))
+        .force('collision',
+            d3.forceCollide()
+                .radius(d => d.r / 2.5)
+                .strength(0.4)
+                .iterations(5))
         .on('tick', tickedY);
 }
-
 
 function update() {
     let sf = snowflakes
@@ -45,18 +48,11 @@ function update() {
         .append("image").merge(sf)
         .attr("xlink:href", "snowflake.svg")
         .attr("color", "white")
-        .attr("height", function (d) {
-            return d.r;
-        })
-        .attr("width", function (d) {
-            return d.r;
-        })
-        .attr("x", function (d) {
-            return d.x;
-        })
-        .attr("y", function (d) {
-            return d.y;
-        })
+        .attr("opacity", d => d.opacity)
+        .attr("height", d => d.r)
+        .attr("width", d => d.r)
+        .attr("x", d => d.x)
+        .attr("y", d => d.y)
 
     sf.exit().remove()
 
@@ -76,8 +72,7 @@ function tickedY() {
     sf.enter()
         .append('image')
         .merge(sf)
-
-    sf.attr('x', function (d) {
+        .attr('x', function (d) {
             if (d.vy == 0) {
                 d.vx = 0;
             } else {
@@ -94,15 +89,12 @@ function tickedY() {
                     }
                     d.ticks--
                 }
-
                 d.vx = d.xVelocity
             }
             return Math.max(d.r, Math.min(width - d.r, d.x)); // per impedire ai nodi di uscire dalla larghezza dell'svg
-        }
-    )
+        })
         .attr('y', function (d) {
             d.vy = yVelocity
-
 
             if (d.y > height * .2) { // Per evitare che collisioni iniziali fermino la caduta dei fiocchi
                 if (d.y >= height - (d.r)) { // se un fiocco tocca il suolo perde la sua velocità
