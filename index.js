@@ -1,62 +1,29 @@
 var width = 500, height = 500;
-var threshold = 0;
-var count = 0;
+
 var yVelocity = 1.8;
 var nodes = []
-var img = [1]
 
 var interval = setInterval(function () {
     let x = getRandomArbitrary(10, width)
     nodes.push({
         r: getRandomArbitrary(10, 35),
         x: x,
-        y: 0,
-        cx: x,
-        cy: 0
+        y: 0
     })
     update();
-    if (nodes.length == 300)
+
+    if (nodes.length == 500)
         clearInterval(interval);
-}, 200)
+
+}, 250)
 
 var svg = d3.select("svg")
     .attr("width", width)
     .attr("height", height);
 
+var snowflakes = svg.append('g')
+    .raise()
 
-var snowflakes = svg.append('g').raise()
-function update() {
-    let circle = snowflakes.selectAll("image")
-        .data(nodes)
-
-    circle.enter()
-        .append("image").merge(circle)
-        .attr("xlink:href", "snowflake.svg")
-        .attr("height", function (d) {
-            return d.r;
-        }) .attr("color", "white").attr("width", function (d) {
-        return d.r;
-    })
-        .attr("x", function (d) {
-            return d.x;
-        })
-        .attr("y", function (d) {
-            return d.y;
-        })
-    //     .attr("cx", function (d) {
-    //     return d.cx;
-    // })
-    //     .attr("cy", function (d) {
-    //         return d.cy;
-    //     });
-
-    circle
-        .exit()
-        .remove()
-
-    simulation.stop();
-    simulation = createSimulation();
-}
 
 function createSimulation() {
 
@@ -68,118 +35,98 @@ function createSimulation() {
         .on('tick', tickedY);
 }
 
-simulation = createSimulation();
-update();
-// var circle =
-// .style("fill", function(d) { return color(d.cluster); })
 
-// var heart =
-// d3.forceCenter().x(100).y(100)
-// var simulation = d3.forceSimulation(nodes)
-// .force("alphaMin",1)
-// .force("y", d3.forceY(height * 10).strength(.000022))
-// .force("x", d3.forceX(height*10).strength(.000022))
-//     .alphaMin(1)
-//     .alphaTarget(1)
-// .velocityDecay(0.6)
-// .force("xAxis",d3.forceX().strength(-10))
-// .force("yAxis", d3.forceY(height * 4).strength(0.003))
-// .force('charge', d3.forceManyBody().strength(10))
-// simulation
-// .force('center', d3.forceCenter()
-// .x(height)
-// .y(height))
-// .velocityDecay(0.1)
-// .alpha(10)
-//     .force("forceY",
-//         d3.forceY(height)
-//             .strength(1)
-//           )
-//     .force("charge", null)
-//     .force('collision', d3.forceCollide().r((d) => d.r).strength(1).iterations(0.001))
-//     .on('tick', tickedY);
+function update() {
+    let sf = snowflakes
+        .selectAll("image")
+        .data(nodes)
 
-//
-//
-// d3.forceSimulation(nodes)
-//     .velocityDecay(0.009)
-//     .force("x", d3.forceX(width).strength(.000022))
+    sf.enter()
+        .append("image").merge(sf)
+        .attr("xlink:href", "snowflake.svg")
+        .attr("color", "white")
+        .attr("height", function (d) {
+            return d.r;
+        })
+        .attr("width", function (d) {
+            return d.r;
+        })
+        .attr("x", function (d) {
+            return d.x;
+        })
+        .attr("y", function (d) {
+            return d.y;
+        })
 
-// function force(alpha) {
-//     for (var i = 0, n = nodes.length, node, k = alpha * 0.1; i < n; ++i) {
-//         node = nodes[i];
-//         node.vx -= node.x * k;
-//         node.vy -= node.y * k;
-//     }
-// }
-function restart() {
-    simulation.alpha(1).restart();
+    sf.exit().remove()
+
+    simulation.stop();
+    simulation = createSimulation();
 }
 
 
-function tickedY() {
+simulation = createSimulation();
+update();
 
-    var u = snowflakes
+function tickedY() {
+    let sf = snowflakes
         .selectAll('image')
         .data(nodes)
 
-    u.enter()
+    sf.enter()
         .append('image')
-        .merge(u)
+        .merge(sf)
 
-    u.attr('x', function (d) {
-
-            // // d.vx = Math.random()
-            // // d.vx = 10;
+    sf.attr('x', function (d) {
             if (d.vy == 0) {
                 d.vx = 0;
             } else {
-                if (!d.ticks) {
+                if (d.ticks == null) {
+                    /**
+                     *  Faccio memorizzare un contatore dei ticks ad ogni nodo
+                     *  così da cambiargli la velocità ad intervalli regolari
+                     */
                     d.ticks = 200
+                    d.xVelocity = getRandomArbitrary(-1, 1);
                 } else {
-
-                    if (d.ticks > 150) {
-                        d.vx = 0.8
-                    } else if (d.ticks > 100) {
-                        d.vx = 0.4
-                    } else if (d.ticks > 50) {
-                        d.vx = -0.4
-                    } else  {
-                        d.vx = -0.8
+                    if (d.ticks == 0) {
+                        d.xVelocity = getRandomArbitrary(-1, 1);
                     }
-
                     d.ticks--
                 }
+
+                d.vx = d.xVelocity
             }
-            return Math.max(d.r, Math.min(width - d.r, d.x));
+            return Math.max(d.r, Math.min(width - d.r, d.x)); // per impedire ai nodi di uscire dalla larghezza dell'svg
         }
     )
         .attr('y', function (d) {
             d.vy = yVelocity
 
-            if (d.y > height * .2) { //per evitare che collisioni iniziali fermino la caduta dei fiocchi
-                if (
-                    d.y >= height - (d.r)//*threshold)
-                ) {
 
+            if (d.y > height * .2) { // Per evitare che collisioni iniziali fermino la caduta dei fiocchi
+                if (d.y >= height - (d.r)) { // se un fiocco tocca il suolo perde la sua velocità
                     d.vy = 0
                     d.vx = 0
-
                 }
+
+                // memorizzo in d.lastY la coordinata y del nodo all'ultimo tick eseguito
                 if (d.y - d.lastY < d.vy / 2) {
+                    // se un fiocco rallenta (a causa di collisioni) la sua velocità viene ridotta
                     d.vy = d.vy / 1.15;
-
                 }
+
                 if (d.y - d.lastY <= 0.0005) {
+                    // se un fiocco ha avuto una piccola variazione di coordinate dall'ultimo tick, questo viene fissato
                     d.fy = d.y
                     d.fx = d.x
                 }
                 d.lastY = d.y;
             }
-            return d.y = Math.max(d.r, Math.min(height - d.r, d.y));
+            return d.y = Math.max(d.r, Math.min(height - d.r, d.y)); // per impedire ai nodi di uscire dall'altezza dell'svg
         });
 
-    u.exit().remove()
+    sf.exit().remove()
 }
 
 function getRandomArbitrary(min, max) {
