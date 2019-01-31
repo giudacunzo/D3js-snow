@@ -17,7 +17,7 @@ var interval =
         if (nodes.length == 250)
             clearInterval(interval);
 
-    }, 250)
+    }, 333)
 
 var svg = d3.select("svg")
     .attr("width", width)
